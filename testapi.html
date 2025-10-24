@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ข้อมูลส่วนบุคคล</title>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- ==== SIDEBAR ==== -->
+<div class="sidebar">
+  <h3>ตั้งค่าความเป็นส่วนตัว</h3>
+  <button class="active">ข้อมูลส่วนบุคคล</button>
+  <button>แก้ไขรหัสผ่าน</button>
+</div>
+
+<!-- ==== MAIN CONTENT ==== -->
+<div class="main">
+  <div class="section-header">
+    <h2>ข้อมูลส่วนบุคคล</h2>
+    <button class="edit-btn" onclick="saveProfile()">บันทึก</button>
+  </div>
+  
+  <!-- Personal Info -->
+  <div class="profile-section">
+    <div>
+      <label>คำนำหน้า</label>
+      <input id="prefix" type="text">
+    </div>
+    <div>
+      <label>ชื่อ</label>
+      <input id="first_name" type="text">
+    </div>
+    <div>
+      <label>นามสกุล</label>
+      <input id="last_name" type="text">
+    </div>
+    <div>
+      <label>ตำแหน่งทางวิชาการ</label>
+      <input id="position" type="text">
+    </div>
+    <div>
+      <label>วัน/เดือน/ปีเกิด</label>
+      <input id="start_date" type="date">
+    </div>
+    <div>
+      <label>วันที่เข้าทำงาน</label>
+      <input id="work_start" type="date">
+    </div>
+    <div>
+      <label>เลขที่ใบอนุญาต</label>
+      <input id="license_no" type="text">
+    </div>
+    <div>
+      <label>เลขที่สมาชิก</label>
+      <input id="member_no" type="text">
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <h3>ข้อมูลติดต่อ</h3>
+  <div class="profile-section">
+    <div>
+      <label>Email</label>
+      <input id="email" type="email">
+    </div>
+    <div>
+      <label>เบอร์โทรศัพท์</label>
+      <input id="phone" type="tel">
+    </div>
+  </div>
+
+  <!-- Education -->
+  <h3>วุฒิการศึกษา (หลักสูตรที่จบมา)</h3>
+  <table id="eduTable">
+    <thead>
+      <tr>
+        <th>ชื่อไฟล์</th>
+        <th>ดูเอกสาร</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="result"></div>
+
+<script>
+// ==== โหลดข้อมูลส่วนตัวจาก API ====
+async function loadProfile() {
+  const res = await fetch("api/profile.php");
+  const data = await res.json();
+
+  for (let key in data) {
+    const input = document.getElementById(key);
+    if (input) input.value = data[key] ?? "";
+  }
+}
+
+// ==== บันทึกข้อมูลกลับ API ====
+async function saveProfile() {
+  const payload = {};
+  const fields = ["prefix", "first_name", "last_name", "position", "start_date", "work_start", "license_no", "member_no", "email", "phone"];
+  fields.forEach(id => payload[id] = document.getElementById(id).value);
+
+  const res = await fetch("api/profile.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const result = await res.json();
+  alert(result.message || result.error);
+}
+
+// ==== ดึงข้อมูลวุฒิการศึกษาจาก Google Drive API ====
+fetch('api/drive_api.php')
+  .then(response => response.json())
+  .then(files => {
+    const tbody = document.querySelector('#eduTable tbody');
+    files.forEach(file => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${file.name}</td>
+        <td><a href="${file.webViewLink}" target="_blank">เปิดดู</a></td>
+      `;
+      tbody.appendChild(row);
+    });
+  })
+  .catch(err => console.error(err));
+
+loadProfile();
+</script>
+</body>
+</html>

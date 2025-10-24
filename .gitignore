@@ -1,0 +1,6 @@
+vendor/
+composer.lock
+composer.json
+credentials.json
+.env
+token.json

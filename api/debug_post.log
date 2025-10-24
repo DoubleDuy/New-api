@@ -1,0 +1,13 @@
+Array
+(
+    [prefix] => นางสาว
+    [first_name] => พิชาภรณ์
+    [last_name] => จันทรกุล
+    [position] => ผศ.
+    [start_date] => 1972-07-27
+    [work_start] => 1998-06-01
+    [license_no] => 4511036515
+    [member_no] => 50436
+    [email] => example1@gmail.com
+    [phone] => 0000000001
+)
